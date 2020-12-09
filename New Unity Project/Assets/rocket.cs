@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class rocket : MonoBehaviour
 {
@@ -21,36 +22,78 @@ public class rocket : MonoBehaviour
     {
         Rotate();
         Thrust();
-        
-    }
-
-    private void Rotate(){
-
-       float applied_rotation = rotation * Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.A)){
-            transform.Rotate(applied_rotation*Vector3.forward);
-        }
-        else if (Input.GetKey(KeyCode.D)){
-            transform.Rotate(-applied_rotation*Vector3.forward);
-        }
 
     }
+    private void OnCollisionStay(Collision collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Finish":
+                if (rigidBody.velocity.magnitude <= 0.01f)
+                {
+                    print("You Won");
+                    SceneManager.LoadScene(1);
+                }
+                break;
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        switch (collision.gameObject.tag)
+        {
 
-    private void Thrust(){
-            rigidBody.freezeRotation = true;
-            float applied_thrust = thrust * Time.deltaTime;
+            case "friendly":
+                // do nothing
+                break;
 
-           if (Input.GetKey(KeyCode.Space)){
-            rigidBody.AddRelativeForce(applied_thrust*Vector3.up);
-            
-            if (!thrusters.isPlaying){
-            thrusters.Play();
+            case "Finish":
+                //do nothing
+                break;
+
+            default:
+                print("You are a dead man");
+                SceneManager.LoadScene(0);
+                break;
+
+        }
+
+    }
+
+    private void Rotate()
+    {
+
+        float applied_rotation = rotation * Time.deltaTime;
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.Rotate(applied_rotation * Vector3.forward);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.Rotate(-applied_rotation * Vector3.forward);
+        }
+
+    }
+
+    private void Thrust()
+    {
+        rigidBody.freezeRotation = true;
+        float applied_thrust = thrust * Time.deltaTime;
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rigidBody.AddRelativeForce(applied_thrust * Vector3.up);
+
+            if (!thrusters.isPlaying)
+            {
+                thrusters.Play();
             }
 
-        }else{
+        }
+        else
+        {
             thrusters.Stop();
         }
-      rigidBody.freezeRotation = false; 
+        rigidBody.freezeRotation = false;
     }
 }
