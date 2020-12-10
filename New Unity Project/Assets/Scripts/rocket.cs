@@ -61,7 +61,7 @@ private void LoadNextScene(){
     SceneManager.LoadScene(1);
 }
 private void LoadDead(){
-       SceneManager.LoadScene(0);
+       SceneManager.LoadScene(2);
 }
 
     private void OnCollisionEnter(Collision collision)
