@@ -7,22 +7,35 @@ public class rocket : MonoBehaviour
 {
     [SerializeField] float thrust = 5f;
     [SerializeField] float rotation = 3f;
+    
+    [SerializeField] AudioClip rocket_audio;
+    [SerializeField] AudioClip explosion;
+    [SerializeField] AudioClip victory;
+    
+    [SerializeField] ParticleSystem thrust_fire_particle;
+    [SerializeField] ParticleSystem explosion_particle;
+    [SerializeField] ParticleSystem victory_particle;
 
-    AudioSource thrusters;
+    AudioSource audio;
     Rigidbody rigidBody;
     // Start is called before the first frame update
+
+enum State {Alive, Dying, Transending}
+State state = State.Alive;
+
     void Start()
     {
-        thrusters = GetComponent<AudioSource>();
+        audio = GetComponent<AudioSource>();
         rigidBody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (state == State.Alive){
         Rotate();
         Thrust();
-
+        }
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -31,14 +44,32 @@ public class rocket : MonoBehaviour
             case "Finish":
                 if (rigidBody.velocity.magnitude <= 0.01f)
                 {
+                    if (state != State.Transending){
+                    state = State.Transending;
+                    audio.Stop(); 
+                    victory_particle.Play();
+                    audio.PlayOneShot(victory);  
                     print("You Won");
-                    SceneManager.LoadScene(1);
+                    Invoke("LoadNextScene", 1f);
+                    }
                 }
                 break;
         }
     }
+
+private void LoadNextScene(){
+    SceneManager.LoadScene(1);
+}
+private void LoadDead(){
+       SceneManager.LoadScene(0);
+}
+
     private void OnCollisionEnter(Collision collision)
     {
+        if (state != State.Alive){
+            return;
+        }
+        
         switch (collision.gameObject.tag)
         {
 
@@ -51,8 +82,12 @@ public class rocket : MonoBehaviour
                 break;
 
             default:
-                print("You are a dead man");
-                SceneManager.LoadScene(0);
+                audio.Stop();
+                thrust_fire_particle.Stop();
+                explosion_particle.Play();
+                audio.PlayOneShot(explosion);  
+                state = State.Dying;
+                Invoke("LoadDead",1.5f);
                 break;
 
         }
@@ -84,16 +119,19 @@ public class rocket : MonoBehaviour
         {
             rigidBody.AddRelativeForce(applied_thrust * Vector3.up);
 
-            if (!thrusters.isPlaying)
+            if (!audio.isPlaying)
             {
-                thrusters.Play();
+                audio.PlayOneShot(rocket_audio);
+                thrust_fire_particle.Play();
             }
 
         }
         else
         {
-            thrusters.Stop();
+            thrust_fire_particle.Stop();
+            audio.Stop();
         }
+
         rigidBody.freezeRotation = false;
     }
 }
