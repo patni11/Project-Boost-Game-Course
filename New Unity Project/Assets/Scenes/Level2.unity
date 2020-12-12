@@ -2800,6 +2800,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4226723557058841098, guid: 4268e08e379924848924416565df3561,
+        type: 3}
+      propertyPath: RestPositionOffset.y
+      value: 30.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4226723557058841098, guid: 4268e08e379924848924416565df3561,
+        type: 3}
+      propertyPath: RestPositionOffset.z
+      value: -40.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 4226723557058841098, guid: 4268e08e379924848924416565df3561,
+        type: 3}
+      propertyPath: RestRotationOffset.x
+      value: 13.724
+      objectReference: {fileID: 0}
     - target: {fileID: 4655725806286606209, guid: 4268e08e379924848924416565df3561,
         type: 3}
       propertyPath: m_LocalPosition.x
